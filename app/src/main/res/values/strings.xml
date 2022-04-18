@@ -2,9 +2,8 @@
     <string name="app_name">BililiveAutoDanmaku</string>
     <string name="label_user_name">User Name</string>
     <string name="label_password">Password</string>
-    <string name="button_login_captcha">Login (Captcha)</string>
-    <string name="msg_login_failed">Login failed. Please check your username and password.</string>
-    <string name="label_captcha">Captcha</string>
+    <string name="msg_check_captcha">Please check the Captcha.</string>
+    <string name="msg_login_failed">Login failed. Wrong username, password, or Captcha expired.</string>
     <string name="label_login">Login</string>
     <string name="label_send_danmaku">Send Danmaku</string>
 </resources>

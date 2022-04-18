@@ -3,12 +3,12 @@ package com.lxfly2000.bililiveautodanmaku;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-public class AppSettings {
+public class SettingsHelper {
     String appName="BililiveAutoDanmaku";
     SharedPreferences pref;
     Context ctx;
 
-    AppSettings(Context ctx){
+    SettingsHelper(Context ctx){
         this.ctx=ctx;
         pref=ctx.getSharedPreferences(appName,Context.MODE_PRIVATE);
     }
