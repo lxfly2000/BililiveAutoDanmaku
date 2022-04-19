@@ -1,9 +1,11 @@
 package com.lxfly2000.bililiveautodanmaku;
 
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.*;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
@@ -186,20 +188,20 @@ public class LoginWithPhoneFragment extends Fragment {
     TextView textViewStatus;
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         //注意Fragment的生命周期，此处才能获取到控件
-        spinnerCRCode=getActivity().findViewById(R.id.spinnerCRCode);
-        editPhone=getActivity().findViewById(R.id.editPhone);
-        editVerificationCode=getActivity().findViewById(R.id.editVerificationCode);
-        GT3GeetestButton geetestButton=getActivity().findViewById(R.id.btn_geetest_phone);
-        buttonLogin=getActivity().findViewById(R.id.buttonLoginWithPhone);
-        buttonSend=getActivity().findViewById(R.id.buttonSend);
-        textViewStatus=getActivity().findViewById(R.id.textViewSMSStatus);
+        spinnerCRCode=view.findViewById(R.id.spinnerCRCode);
+        editPhone=view.findViewById(R.id.editPhone);
+        editVerificationCode=view.findViewById(R.id.editVerificationCode);
+        GT3GeetestButton geetestButton=view.findViewById(R.id.btn_geetest_phone);
+        buttonLogin=view.findViewById(R.id.buttonLoginWithPhone);
+        buttonSend=view.findViewById(R.id.buttonSend);
+        textViewStatus=view.findViewById(R.id.textViewSMSStatus);
         //注意Fragment的生命周期，从这开始才能正确获取到控件
-        settings=new SettingsHelper(getActivity());
+        settings=new SettingsHelper(view.getContext());
         // 请在oncreate方法里初始化以获取足够手势数据来保证第一轮验证成功率
-        gt3GeetestUtils = new GT3GeetestUtils(getActivity());
+        gt3GeetestUtils = new GT3GeetestUtils(view.getContext());
         // 配置bean文件，也可在oncreate初始化
         gt3ConfigBean = new GT3ConfigBean();
         // 设置验证模式，1：bind，2：unbind
@@ -259,8 +261,24 @@ public class LoginWithPhoneFragment extends Fragment {
             }
         });
         editPhone.getEditText().setText(settings.GetString("Phone"));
-        buttonSend.setOnClickListener(view->DoSend());
-        buttonLogin.setOnClickListener(view->DoLogin());
+        buttonSend.setOnClickListener(view2->DoSend());
+        buttonLogin.setOnClickListener(view2->DoLogin());
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if(gt3GeetestUtils!=null){
+            gt3GeetestUtils.destory();
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if(gt3GeetestUtils!=null){
+            gt3GeetestUtils.changeDialogLayout();
+        }
     }
 
     public void SubthreadToast(String str){

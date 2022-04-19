@@ -1,18 +1,17 @@
 package com.lxfly2000.bililiveautodanmaku;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import com.geetest.sdk.GT3ConfigBean;
 import com.geetest.sdk.GT3ErrorBean;
 import com.geetest.sdk.GT3GeetestUtils;
@@ -170,13 +169,13 @@ public class LoginWithAccountFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         //注意Fragment的生命周期，从这开始才能正确获取到控件
-        settings=new SettingsHelper(getActivity());
+        settings=new SettingsHelper(view.getContext());
         // 请在oncreate方法里初始化以获取足够手势数据来保证第一轮验证成功率
-        GT3GeetestButton geetestButton = getActivity().findViewById(R.id.btn_geetest_account);
-        gt3GeetestUtils = new GT3GeetestUtils(getActivity());
+        GT3GeetestButton geetestButton = view.findViewById(R.id.btn_geetest_account);
+        gt3GeetestUtils = new GT3GeetestUtils(view.getContext());
         // 配置bean文件，也可在oncreate初始化
         gt3ConfigBean = new GT3ConfigBean();
         // 设置验证模式，1：bind，2：unbind
@@ -194,17 +193,16 @@ public class LoginWithAccountFragment extends Fragment {
         // 绑定
         geetestButton.setGeetestUtils(gt3GeetestUtils);
         okHttpClient=new OkHttpClient();
-        LoginActivity activity=(LoginActivity)getActivity();
-        editUsername = getActivity().findViewById(R.id.editUsername);
-        editPassword = getActivity().findViewById(R.id.editPassword);
+        editUsername = view.findViewById(R.id.editUsername);
+        editPassword = view.findViewById(R.id.editPassword);
         editUsername.getEditText().setText(settings.GetString("Username"));
         editPassword.getEditText().setText(settings.GetString("Password"));
-        getActivity().findViewById(R.id.buttonLoginWithAccount).setOnClickListener(view -> DoLogin());
+        view.findViewById(R.id.buttonLoginWithAccount).setOnClickListener(view2 -> DoLogin());
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         if (gt3GeetestUtils != null) {
             gt3GeetestUtils.destory();
         }

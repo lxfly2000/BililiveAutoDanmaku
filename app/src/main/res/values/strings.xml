@@ -15,7 +15,7 @@
     <string name="msg_empty_password">Please fill in the password.</string>
     <string name="msg_empty_phone">Please fill in the phone number.</string>
     <string name="msg_empty_verification_code">Please fill in the verification code.</string>
-    <string name="label_qr_instructions">Save and scan the QR Code from Bilibili App, if you didn’t see the image please take a screenshot.</string>
+    <string name="label_qr_instructions">Save and scan the QR Code from Bilibili App, if you can’t find the image please take a screenshot.</string>
     <string name="msg_qr_confirm_login">Please confirm login.</string>
     <string name="label_save">Save</string>
     <string name="msg_saved_to">Saved to %s</string>

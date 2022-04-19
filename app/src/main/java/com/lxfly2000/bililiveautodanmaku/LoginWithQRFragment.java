@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
@@ -98,11 +99,11 @@ public class LoginWithQRFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        qrView=getActivity().findViewById(R.id.imageQRCode);
-        statusView=getActivity().findViewById(R.id.textViewQRStatus);
-        buttonLogin=getActivity().findViewById(R.id.buttonLoginWithQR);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        qrView=view.findViewById(R.id.imageQRCode);
+        statusView=view.findViewById(R.id.textViewQRStatus);
+        buttonLogin=view.findViewById(R.id.buttonLoginWithQR);
         okHttpClient=new OkHttpClient();
         okHttpClient.newCall(new Request.Builder().url("https://passport.bilibili.com/qrcode/getLoginUrl").get().build()).enqueue(new Callback() {
             @Override
@@ -159,6 +160,7 @@ public class LoginWithQRFragment extends Fragment {
                                                         SettingsHelper settings = new SettingsHelper(getActivity());
                                                         settings.SetString("Cookies", cookiesObj.toString());
                                                         getActivity().runOnUiThread(()->{
+                                                            timer.cancel();
                                                             if (!((LoginActivity) getActivity()).TestCookies()) {
                                                                 SubthreadToast(objReturn.toString());
                                                             }
@@ -168,14 +170,17 @@ public class LoginWithQRFragment extends Fragment {
                                                     }else if(objReturn.getInt("data")==-5){
                                                         SubthreadToast(getActivity().getString(R.string.msg_qr_confirm_login));
                                                     }else{
+                                                        timer.cancel();
                                                         SubthreadToast(objReturn.toString());
                                                     }
                                                 }catch (JSONException e){
+                                                    timer.cancel();
                                                     SubthreadToast(e.getLocalizedMessage());
                                                 }
                                             }
                                         });
                             }catch (JSONException e){
+                                timer.cancel();
                                 SubthreadToast(e.getLocalizedMessage());
                             }
                         }
@@ -187,7 +192,7 @@ public class LoginWithQRFragment extends Fragment {
                 }
             }
         });
-        buttonLogin.setOnClickListener(view->SaveQR());
+        buttonLogin.setOnClickListener(view2->SaveQR());
     }
 
     public static Uri GetImageContentUri(Context context, java.io.File imageFile) {
