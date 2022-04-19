@@ -110,7 +110,7 @@ public class LoginWithPhoneFragment extends Fragment {
             okHttpClient.newCall(new Request.Builder().url("https://passport.bilibili.com/x/passport-login/captcha?source=main_web").get().build()).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    Toast.makeText(getActivity(),e.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
+                    SubthreadToast(e.getLocalizedMessage());
                 }
 
                 @Override
@@ -121,7 +121,7 @@ public class LoginWithPhoneFragment extends Fragment {
                         gtData.getJSONObject("geetest").put("new_captcha",true);
                         new RequestAPI1().execute(gtData.getJSONObject("geetest"));
                     }catch (JSONException e){
-                        Toast.makeText(getActivity(),e.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
+                        SubthreadToast(e.getLocalizedMessage());
                     }
                 }
             });
@@ -222,7 +222,7 @@ public class LoginWithPhoneFragment extends Fragment {
         okHttpClient.newCall(new Request.Builder().url("https://passport.bilibili.com/web/generic/country/list").get().build()).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Toast.makeText(getActivity(),e.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
+                SubthreadToast(e.getLocalizedMessage());
             }
 
             @Override
@@ -256,7 +256,7 @@ public class LoginWithPhoneFragment extends Fragment {
                         spinnerCRCode.setSelection(csel);
                     });
                 }catch (JSONException e){
-                    Toast.makeText(getActivity(),e.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
+                    SubthreadToast(e.getLocalizedMessage());
                 }
             }
         });

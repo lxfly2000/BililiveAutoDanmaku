@@ -40,12 +40,9 @@ import java.util.TimerTask;
  */
 public class LoginWithQRFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -60,7 +57,6 @@ public class LoginWithQRFragment extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment LoginWithQRFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static LoginWithQRFragment newInstance(String param1, String param2) {
         LoginWithQRFragment fragment = new LoginWithQRFragment();
         Bundle args = new Bundle();
@@ -108,7 +104,7 @@ public class LoginWithQRFragment extends Fragment {
         okHttpClient.newCall(new Request.Builder().url("https://passport.bilibili.com/qrcode/getLoginUrl").get().build()).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Toast.makeText(getActivity(),e.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
+                SubthreadToast(e.getLocalizedMessage());
             }
 
             @Override
@@ -186,9 +182,9 @@ public class LoginWithQRFragment extends Fragment {
                         }
                     },3000,3000);
                 }catch (JSONException e){
-                    Toast.makeText(getActivity(),e.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
+                    SubthreadToast(e.getLocalizedMessage());
                 }catch (WriterException e){
-                    Toast.makeText(getActivity(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    SubthreadToast(e.getLocalizedMessage());
                 }
             }
         });
