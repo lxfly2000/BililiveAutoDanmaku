@@ -41,5 +41,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'com.geetest.sensebot:sensebot:4.3.5.3'
     implementation 'com.github.gzu-liyujiang:RSAUtils:2.0.0'
-    implementation "androidx.fragment:fragment:1.3.6"
+    implementation 'androidx.fragment:fragment:1.3.6'
+    implementation 'com.google.zxing:core:3.4.1'
 }

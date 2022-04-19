@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
@@ -81,5 +82,31 @@ public class LoginActivity extends AppCompatActivity {
             Log.d("Login",e.getLocalizedMessage());
         }
         return false;
+    }
+
+    boolean canFinish=true;
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(viewPager2.getCurrentItem()==2){
+            canFinish=false;
+            new AlertDialog.Builder(this)
+                    .setTitle(android.R.string.dialog_alert_title)
+                    .setMessage(R.string.msg_qrcode_close_warning)
+                    .setOnDismissListener(dialogInterface -> canFinish=true)
+                    .setNegativeButton(android.R.string.no,null)
+                    .setPositiveButton(android.R.string.yes,(dialogInterface, i) -> {
+                        canFinish=true;
+                        finish();
+                    }).show();
+        }
+    }
+
+    @Override
+    public void finish() {
+        if(canFinish) {
+            super.finish();
+        }
     }
 }

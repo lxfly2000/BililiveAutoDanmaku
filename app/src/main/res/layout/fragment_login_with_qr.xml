@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
+              xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               tools:context=".LoginWithQRFragment" android:orientation="vertical">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ImageView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Not implemented"/>
-
+            android:layout_height="wrap_content" tools:src="@tools:sample/avatars" android:id="@+id/imageQRCode"
+            android:layout_weight="1"/>
+    <TextView
+            android:text="@string/label_qr_instructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/textViewQRStatus"/>
+    <Button
+            android:text="@string/label_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/buttonLoginWithQR" android:layout_weight="0"
+            android:enabled="false"/>
 </LinearLayout>
