@@ -28,7 +28,7 @@
             android:layout_height="wrap_content">
 
         <com.geetest.sdk.views.GT3GeetestButton
-                android:id="@+id/btn_geetest"
+                android:id="@+id/btn_geetest_account"
                 android:layout_width="290dp"
                 android:layout_height="44dp"
                 android:layout_centerHorizontal="true"

@@ -175,7 +175,7 @@ public class LoginWithAccountFragment extends Fragment {
         //注意Fragment的生命周期，从这开始才能正确获取到控件
         settings=new SettingsHelper(getActivity());
         // 请在oncreate方法里初始化以获取足够手势数据来保证第一轮验证成功率
-        GT3GeetestButton geetestButton = getActivity().findViewById(R.id.btn_geetest);
+        GT3GeetestButton geetestButton = getActivity().findViewById(R.id.btn_geetest_account);
         gt3GeetestUtils = new GT3GeetestUtils(getActivity());
         // 配置bean文件，也可在oncreate初始化
         gt3ConfigBean = new GT3ConfigBean();
@@ -194,15 +194,12 @@ public class LoginWithAccountFragment extends Fragment {
         // 绑定
         geetestButton.setGeetestUtils(gt3GeetestUtils);
         okHttpClient=new OkHttpClient();
-        if(TestCookies()){
-            OpenDanmakuActivity();
-        }else {
-            editUsername = getActivity().findViewById(R.id.editUsername);
-            editPassword = getActivity().findViewById(R.id.editPassword);
-            editUsername.getEditText().setText(settings.GetString("Username"));
-            editPassword.getEditText().setText(settings.GetString("Password"));
-            getActivity().findViewById(R.id.buttonLoginWithAccount).setOnClickListener(view -> DoLogin());
-        }
+        LoginActivity activity=(LoginActivity)getActivity();
+        editUsername = getActivity().findViewById(R.id.editUsername);
+        editPassword = getActivity().findViewById(R.id.editPassword);
+        editUsername.getEditText().setText(settings.GetString("Username"));
+        editPassword.getEditText().setText(settings.GetString("Password"));
+        getActivity().findViewById(R.id.buttonLoginWithAccount).setOnClickListener(view -> DoLogin());
     }
 
     @Override
@@ -233,6 +230,14 @@ public class LoginWithAccountFragment extends Fragment {
     private void DoLogin(){
         if(geetestReturned==null){
             Toast.makeText(getActivity(),R.string.msg_check_captcha,Toast.LENGTH_LONG).show();
+            return;
+        }
+        if(editUsername.getEditText().getText().length()==0){
+            Toast.makeText(getActivity(),R.string.msg_empty_username,Toast.LENGTH_LONG).show();
+            return;
+        }
+        if(editPassword.getEditText().getText().length()==0){
+            Toast.makeText(getActivity(),R.string.msg_empty_password,Toast.LENGTH_LONG).show();
             return;
         }
         okHttpClient.newCall(new Request.Builder().url("https://passport.bilibili.com/login?act=getkey").get().build()).enqueue(new Callback() {
@@ -279,7 +284,8 @@ public class LoginWithAccountFragment extends Fragment {
                         .add("token", gtData.getString("token"))
                         .add("challenge", gtData.getJSONObject("geetest").getString("challenge"))
                         .add("validate", geetestReturned.getString("geetest_validate"))
-                        .add("seccode", geetestReturned.getString("geetest_seccode")).build()).build()).enqueue(new Callback() {
+                        .add("seccode", geetestReturned.getString("geetest_seccode")).build()).build())
+                        .enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         SubthreadToast(e.getLocalizedMessage());
@@ -297,18 +303,16 @@ public class LoginWithAccountFragment extends Fragment {
                             //登录成功后的操作
                             settings.SetString("Username", editUsername.getEditText().getText().toString());
                             settings.SetString("Password", editPassword.getEditText().getText().toString());
-                            if(loginResult.getJSONObject("data").has("isLogin")) {
-                                //保存Cookies
-                                List<String> cookiesList=response.headers().values("Set-Cookie");
-                                JSONObject cookiesObj=new JSONObject();
-                                for(String s:cookiesList){
-                                    String key=s.substring(0,s.indexOf('='));
-                                    String value=s.substring(s.indexOf('='),s.indexOf(';'));
-                                    cookiesObj.put(key,value);
-                                }
-                                settings.SetString("Cookies",cookiesObj.toString());
-                                TestCookies();
-                            }else{
+                            //保存Cookies
+                            List<String> cookiesList=response.headers().values("Set-Cookie");
+                            JSONObject cookiesObj=new JSONObject();
+                            for(String s:cookiesList){
+                                String key=s.substring(0,s.indexOf('='));
+                                String value=s.substring(s.indexOf('=')+1,s.indexOf(';'));
+                                cookiesObj.put(key,value);
+                            }
+                            settings.SetString("Cookies",cookiesObj.toString());
+                            if(!((LoginActivity)getActivity()).TestCookies()){
                                 SubthreadToast(loginResult.toString());
                             }
                         }catch (JSONException e){
@@ -324,23 +328,5 @@ public class LoginWithAccountFragment extends Fragment {
 
     void LoginPost(String pw){
         new LoginThread().execute(pw);
-    }
-
-    private void OpenDanmakuActivity(){
-        startActivity(new Intent(getActivity(),DanmakuActivity.class));
-        getActivity().finish();
-    }
-
-    private boolean TestCookies(){
-        try {
-            JSONObject cookiesObj=new JSONObject(settings.GetString("Cookies"));
-            //如果成功则调用OpenDanmakuActivity.
-            if(/*TODO*/true){
-                OpenDanmakuActivity();
-            }
-        }catch (JSONException e){
-            Log.d("Login",e.getLocalizedMessage());
-        }
-        return false;
     }
 }

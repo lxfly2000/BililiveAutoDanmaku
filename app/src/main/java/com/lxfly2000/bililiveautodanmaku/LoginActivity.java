@@ -59,5 +59,27 @@ public class LoginActivity extends AppCompatActivity {
         });
         new TabLayoutMediator(tabLayout, viewPager2, true,
                 (tab, position) -> tab.setText(getResources().getStringArray(R.array.label_login_methods)[position])).attach();
+        TestCookies();
+    }
+
+    private void OpenDanmakuActivity(){
+        startActivity(new Intent(this,DanmakuActivity.class));
+        finish();
+    }
+
+    public boolean TestCookies(){
+        try {
+            JSONObject cookiesObj=new JSONObject(new SettingsHelper(this).GetString("Cookies"));
+            String sess=cookiesObj.getString("SESSDATA");
+            Toast.makeText(this,sess,Toast.LENGTH_LONG).show();
+            //TODO:如果成功则调用OpenDanmakuActivity.
+            /*if(false){
+                OpenDanmakuActivity();
+                return true;
+            }*/
+        }catch (JSONException e){
+            Log.d("Login",e.getLocalizedMessage());
+        }
+        return false;
     }
 }

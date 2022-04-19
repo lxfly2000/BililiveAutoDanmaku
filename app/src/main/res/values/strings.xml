@@ -10,6 +10,11 @@
     <string name="label_cr_code">Region Code</string>
     <string name="label_verification_code">Verification Code</string>
     <string name="label_send_code">Send Code</string>
+    <string name="msg_verification_code_sent">Verification code is sent.</string>
+    <string name="msg_empty_username">Please fill in the username.</string>
+    <string name="msg_empty_password">Please fill in the password.</string>
+    <string name="msg_empty_phone">Please fill in the phone number.</string>
+    <string name="msg_empty_verification_code">Please fill in the verification code.</string>
     <string-array name="label_login_methods">
         <item>Account</item>
         <item>SMS</item>
