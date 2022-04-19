@@ -6,4 +6,13 @@
     <string name="msg_login_failed">Login failed. Wrong username, password, or Captcha expired.</string>
     <string name="label_login">Login</string>
     <string name="label_send_danmaku">Send Danmaku</string>
+    <string name="label_phone_number">Phone Number</string>
+    <string name="label_cr_code">Region Code</string>
+    <string name="label_verification_code">Verification Code</string>
+    <string name="label_send_code">Send Code</string>
+    <string-array name="label_login_methods">
+        <item>Account</item>
+        <item>SMS</item>
+        <item>QR Code</item>
+    </string-array>
 </resources>
