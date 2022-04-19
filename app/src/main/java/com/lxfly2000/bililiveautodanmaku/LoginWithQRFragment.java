@@ -195,6 +195,12 @@ public class LoginWithQRFragment extends Fragment {
         buttonLogin.setOnClickListener(view2->SaveQR());
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        timer.cancel();
+    }
+
     public static Uri GetImageContentUri(Context context, java.io.File imageFile) {
         String filePath = imageFile.getAbsolutePath();
         Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
