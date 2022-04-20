@@ -1,36 +1,23 @@
 package com.lxfly2000.bililiveautodanmaku;
 
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.os.AsyncTask;
-import android.os.Looper;
+import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentContainerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
-import com.geetest.sdk.GT3ConfigBean;
-import com.geetest.sdk.GT3ErrorBean;
-import com.geetest.sdk.GT3GeetestUtils;
-import com.geetest.sdk.GT3Listener;
-import com.geetest.sdk.views.GT3GeetestButton;
-import com.github.gzuliyujiang.rsautils.RSAUtils;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-import com.google.android.material.textfield.TextInputLayout;
 import okhttp3.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
