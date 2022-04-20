@@ -2,11 +2,11 @@ package com.lxfly2000.bililiveautodanmaku;
 
 import android.app.*;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 import okhttp3.*;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,7 +75,7 @@ public class AutoDanmakuService extends Service {
 
     class Params {
         JSONObject cookiesObj;
-        int liveRoom, startLine, sendInterval;
+        int liveRoom, sendInterval;
         boolean loop;
         List<String> danmakuList = new ArrayList<>();
     }
@@ -90,9 +90,18 @@ public class AutoDanmakuService extends Service {
     public boolean StartDanmaku(){
         errorCode=0;
         errorMsg="";
-        nextLine= params.startLine;
-        if(timer!=null){
+        if(params.danmakuList.size()==0){
+            errorCode=-1;
+            errorMsg=getString(R.string.msg_no_danmaku_set);
+            InvokeCallbacks(errorCode,nextLine);
             return false;
+        }
+        if(nextLine<0||nextLine>=params.danmakuList.size()){
+            nextLine=0;
+        }
+        if(timer!=null){
+            Log.d("Danmaku","Timer is not released.");
+            timer.cancel();
         }
         timer=new Timer();
         try {
@@ -140,10 +149,12 @@ public class AutoDanmakuService extends Service {
                                             nextLine = 0;
                                             InvokeCallbacks(errorCode,nextLine);
                                         } else {
-                                            StopDanmaku();
                                             errorCode=1;
                                             InvokeCallbacks(errorCode,nextLine);
+                                            StopDanmaku();
                                         }
+                                    }else{
+                                        InvokeCallbacks(errorCode,nextLine);
                                     }
                                 }
                             });
@@ -165,7 +176,6 @@ public class AutoDanmakuService extends Service {
         }
         timer.cancel();
         timer=null;
-        nextLine=-1;
         return true;
     }
 
@@ -184,8 +194,8 @@ public class AutoDanmakuService extends Service {
         return this;
     }
 
-    public AutoDanmakuService SetStartLine(int startLine){
-        this.params.startLine=startLine;
+    public AutoDanmakuService SetNextLine(int line){
+        nextLine=line;
         return this;
     }
 
@@ -231,8 +241,8 @@ public class AutoDanmakuService extends Service {
         return params.sendInterval;
     }
 
-    public int GetStartLine(){
-        return params.startLine;
+    public int GetNextLine(){
+        return nextLine;
     }
 
     public boolean GetIsLooped(){

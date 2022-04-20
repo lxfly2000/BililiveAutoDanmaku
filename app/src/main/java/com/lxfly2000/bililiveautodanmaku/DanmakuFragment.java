@@ -11,15 +11,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.lxfly2000.bililiveautodanmaku.placeholder.PlaceholderContent;
 
+import java.util.List;
+
 /**
  * A fragment representing a list of Items.
  */
 public class DanmakuFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
+    private static final String ARG_DANMAKU_STRING = "paramDanmakuString";
     // TODO: Customize parameters
-    private int mColumnCount = 1;
+    private String danmakuString;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -30,10 +31,10 @@ public class DanmakuFragment extends Fragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static DanmakuFragment newInstance(int columnCount) {
+    public static DanmakuFragment newInstance(String danmakuString) {
         DanmakuFragment fragment = new DanmakuFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+        args.putString(ARG_DANMAKU_STRING, danmakuString);
         fragment.setArguments(args);
         return fragment;
     }
@@ -43,7 +44,7 @@ public class DanmakuFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+            danmakuString = getArguments().getString(ARG_DANMAKU_STRING);
         }
     }
 
@@ -56,11 +57,7 @@ public class DanmakuFragment extends Fragment {
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
             recyclerView.setAdapter(new MyItemRecyclerViewAdapter(PlaceholderContent.ITEMS));
         }
         return view;
