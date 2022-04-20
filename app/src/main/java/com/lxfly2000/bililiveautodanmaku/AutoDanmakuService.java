@@ -1,8 +1,11 @@
 package com.lxfly2000.bililiveautodanmaku;
 
-import android.app.Service;
+import android.app.*;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import okhttp3.*;
 import org.json.JSONException;
@@ -28,6 +31,48 @@ public class AutoDanmakuService extends Service {
         return localBinder;
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        RegisterNotifyIdChannel();
+        Notification.Builder notifBuilder=new Notification.Builder(getApplicationContext())
+                .setContentIntent(PendingIntent.getActivity(this,0,new Intent(this,DanmakuActivity.class),0))
+                .setContentTitle(getString(R.string.app_name))
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentText("TODO");
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O) {
+            notifBuilder.setChannelId(notifyChannelId);
+        }
+        startForeground(1,notifBuilder.build());
+        //TODO:在通知中添加控制启动/暂停的按钮
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    private static final String notifyChannelId=BuildConfig.APPLICATION_ID;
+
+    private void RegisterNotifyIdChannel(){
+        //https://blog.csdn.net/qq_15527709/article/details/78853048
+        String notifyChannelName = "AutoDanmaku Notification Channel";
+        NotificationChannel notificationChannel = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notificationChannel = new NotificationChannel(notifyChannelId,
+                    notifyChannelName, NotificationManager.IMPORTANCE_DEFAULT);
+            notificationChannel.enableLights(false);
+            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.setShowBadge(false);
+            notificationChannel.enableVibration(false);
+            notificationChannel.setSound(null,null);
+            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            manager.createNotificationChannel(notificationChannel);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        stopForeground(true);
+        super.onDestroy();
+    }
+
     class Params {
         JSONObject cookiesObj;
         int liveRoom, startLine, sendInterval;
@@ -42,8 +87,14 @@ public class AutoDanmakuService extends Service {
     String errorMsg="";
     String cookieString,bili_jct;
 
-    public void StartDanmaku(){
+    public boolean StartDanmaku(){
+        errorCode=0;
+        errorMsg="";
         nextLine= params.startLine;
+        if(timer!=null){
+            return false;
+        }
+        timer=new Timer();
         try {
             JSONObject cookieObj = new JSONObject(new SettingsHelper(this).GetString("Cookies"));
             //https://github.com/SocialSisterYi/bilibili-API-collect/issues/320
@@ -77,6 +128,7 @@ public class AutoDanmakuService extends Service {
                                 public void onFailure(Call call, IOException e) {
                                     errorCode = -1;
                                     errorMsg = e.getLocalizedMessage();
+                                    InvokeCallbacks(errorCode,nextLine);
                                     StopDanmaku();
                                 }
 
@@ -86,18 +138,25 @@ public class AutoDanmakuService extends Service {
                                     if (nextLine >= params.danmakuList.size()) {
                                         if (params.loop) {
                                             nextLine = 0;
+                                            InvokeCallbacks(errorCode,nextLine);
                                         } else {
                                             StopDanmaku();
+                                            errorCode=1;
+                                            InvokeCallbacks(errorCode,nextLine);
                                         }
                                     }
                                 }
                             });
                 }
             }, params.sendInterval, params.sendInterval);
+            InvokeCallbacks(errorCode,nextLine);
         }catch (JSONException e){
             errorCode=-1;
             errorMsg=e.getLocalizedMessage();
+            InvokeCallbacks(errorCode,nextLine);
+            return false;
         }
+        return true;
     }
 
     public boolean StopDanmaku(){
@@ -151,11 +210,54 @@ public class AutoDanmakuService extends Service {
         return timer!=null;
     }
 
+    /**@return 0:成功，-1:发生错误，1:弹幕已全部发送*/
     public int GetErrorCode(){
         return errorCode;
     }
 
     public String GetErrorMsg(){
         return errorMsg;
+    }
+
+    public JSONObject GetCookies(){
+        return params.cookiesObj;
+    }
+
+    public int GetRoomId(){
+        return params.liveRoom;
+    }
+
+    public int GetInterval(){
+        return params.sendInterval;
+    }
+
+    public int GetStartLine(){
+        return params.startLine;
+    }
+
+    public boolean GetIsLooped(){
+        return params.loop;
+    }
+
+    public List<String>GetDanmakuList(){
+        return params.danmakuList;
+    }
+
+    private List<DanmakuCallback>callbacks=new ArrayList<>();
+    public abstract static class DanmakuCallback{
+        public abstract void OnCallback(int error,int nextLine);
+    }
+    public void AddCallback(DanmakuCallback callback){
+        callbacks.add(callback);
+    }
+
+    public void ClearCallback(){
+        callbacks.clear();
+    }
+
+    private void InvokeCallbacks(int error,int nextLine){
+        for(int i=0;i<callbacks.size();i++){
+            callbacks.get(i).OnCallback(error,nextLine);
+        }
     }
 }

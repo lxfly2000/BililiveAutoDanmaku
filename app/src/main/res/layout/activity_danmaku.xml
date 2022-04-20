@@ -50,7 +50,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:id="@+id/textView3"/>
             <TextView
-                    android:text="@string/label_stopped"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:id="@+id/textNextLine"/>
         </LinearLayout>

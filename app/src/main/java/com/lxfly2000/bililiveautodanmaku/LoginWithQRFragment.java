@@ -211,6 +211,7 @@ public class LoginWithQRFragment extends Fragment {
             qrBmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
             fos.flush();
             fos.close();
+            //BUG:相册中无法添加正确的路径
             if(AndroidUtility.GetImageContentUri(getActivity(),file)!=null){
                 SubthreadToast(getActivity().getString(R.string.msg_saved_to,file.getAbsolutePath()));
             }
