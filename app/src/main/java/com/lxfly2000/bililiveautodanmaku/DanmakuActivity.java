@@ -198,6 +198,7 @@ public class DanmakuActivity extends AppCompatActivity {
             EditDanmaku();
         }else{
             danmakuString=((EditText)findViewById(R.id.editDanmaku)).getText().toString();
+            SaveSettings();
             ConfirmDanmaku();
         }
     }
