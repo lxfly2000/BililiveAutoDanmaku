@@ -7,4 +7,60 @@
         android:layout_height="match_parent"
         tools:context=".DanmakuActivity" android:orientation="vertical">
 
+    <androidx.fragment.app.FragmentContainerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:name="com.lxfly2000.bililiveautodanmaku.DanmakuFragment"
+            android:id="@+id/fragmentDanmaku" android:layout_weight="1"/>
+    <Button
+            android:text="@string/label_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/buttonEdit"/>
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" android:id="@+id/editRoomId" android:layout_weight="1">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/label_room_id" android:inputType="number"/>
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" android:id="@+id/editInterval" android:layout_weight="1">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/label_send_interval" android:inputType="number"/>
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_weight="1">
+            <TextView
+                    android:text="@string/label_next_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/textView3"/>
+            <TextView
+                    android:text="@string/label_stopped"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/textNextLine"/>
+        </LinearLayout>
+        <CheckBox
+                android:text="@string/label_loop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/checkLoop"/>
+    </LinearLayout>
+    <Button
+            android:text="@string/label_start"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/buttonStartStop"/>
 </LinearLayout>

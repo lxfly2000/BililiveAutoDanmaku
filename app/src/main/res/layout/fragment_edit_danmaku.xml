@@ -4,11 +4,11 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              tools:context=".EditDanmakuFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <EditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/hello_blank_fragment"/>
-
+            android:inputType="textMultiLine"
+            android:gravity="start|top"
+            android:ems="10"
+            android:id="@+id/editDanmaku" android:hint="@string/label_edit"/>
 </FrameLayout>
