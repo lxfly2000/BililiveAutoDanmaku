@@ -20,4 +20,19 @@
     <string name="label_save">Save</string>
     <string name="msg_saved_to">Saved to %s</string>
     <string name="msg_qrcode_close_warning">The QR code will be expired if you press back, proceed?</string>
+    <string name="label_edit">Edit</string>
+    <string name="label_room_id">Room ID</string>
+    <string name="label_send_interval">Send Interval (ms)</string>
+    <string name="label_next_line">Next Danmaku: (Can be set by clicking an item in the list)</string>
+    <string name="label_loop">Loop</string>
+    <string name="label_start">Start</string>
+    <string name="label_stop">Stop</string>
+    <string name="label_stopped">Stopped.</string>
+    <string name="label_author">Made by: lxfly2000</string>
+    <string name="label_visit_github">Visit GitHub repo</string>
+    <string name="label_menu_quit_app">Quit App</string>
+    <string name="label_menu_logout">Log out</string>
+    <string name="label_menu_about">About</string>
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

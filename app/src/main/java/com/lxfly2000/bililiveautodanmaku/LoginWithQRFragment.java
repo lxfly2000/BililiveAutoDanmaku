@@ -21,6 +21,7 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
+import com.lxfly2000.utilities.AndroidUtility;
 import okhttp3.*;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -199,26 +200,6 @@ public class LoginWithQRFragment extends Fragment {
         timer.cancel();
     }
 
-    public static Uri GetImageContentUri(Context context, java.io.File imageFile) {
-        String filePath = imageFile.getAbsolutePath();
-        Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                new String[] { MediaStore.Images.Media._ID }, MediaStore.Images.Media.DATA + "=? ",
-                new String[] { filePath }, null);
-        if (cursor != null && cursor.moveToFirst()) {
-            int id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
-            Uri baseUri = Uri.parse("content://media/external/images/media");
-            return Uri.withAppendedPath(baseUri, "" + id);
-        } else {
-            if (imageFile.exists()) {
-                ContentValues values = new ContentValues();
-                values.put(MediaStore.Images.Media.DATA, filePath);
-                return context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            } else {
-                return null;
-            }
-        }
-    }
-
     private void SaveQR(){
         File dirFile=new File(getActivity().getExternalCacheDir().getPath());
         if(!dirFile.exists()){
@@ -230,7 +211,7 @@ public class LoginWithQRFragment extends Fragment {
             qrBmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
             fos.flush();
             fos.close();
-            if(GetImageContentUri(getActivity(),file)!=null){
+            if(AndroidUtility.GetImageContentUri(getActivity(),file)!=null){
                 SubthreadToast(getActivity().getString(R.string.msg_saved_to,file.getAbsolutePath()));
             }
         }catch (IOException e){

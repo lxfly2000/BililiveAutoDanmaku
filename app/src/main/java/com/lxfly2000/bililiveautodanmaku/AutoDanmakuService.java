@@ -115,14 +115,8 @@ public class AutoDanmakuService extends Service {
         return this;
     }
 
-    public AutoDanmakuService SetContent(String content){
-        String[]list=content.split("\n");
-        params.danmakuList.clear();
-        for(String s:list){
-            if(s.length()>0){
-                params.danmakuList.add(s);
-            }
-        }
+    public AutoDanmakuService SetContent(List<String> content){
+        params.danmakuList=content;
         return this;
     }
 

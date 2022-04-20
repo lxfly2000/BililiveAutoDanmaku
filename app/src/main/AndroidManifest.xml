@@ -12,6 +12,10 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/Theme.BililiveAutoDanmaku">
+        <activity
+                android:name=".AboutActivity"
+                android:exported="true"/>
+
         <service
                 android:name=".AutoDanmakuService"
                 android:enabled="true"
