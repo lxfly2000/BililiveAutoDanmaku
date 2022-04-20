@@ -157,9 +157,12 @@ public class LoginWithQRFragment extends Fragment {
                                                         settings.SetString("Cookies", cookiesObj.toString());
                                                         getActivity().runOnUiThread(()->{
                                                             timer.cancel();
-                                                            if (!((LoginActivity) getActivity()).TestCookies()) {
-                                                                SubthreadToast(objReturn.toString());
-                                                            }
+                                                            ((LoginActivity) getActivity()).TestCookies(new LoginActivity.OnTestCookiesCallback() {
+                                                                @Override
+                                                                public void onFailed() {
+                                                                    SubthreadToast(objReturn.toString());
+                                                                }
+                                                            });
                                                         });
                                                     }else if(objReturn.getInt("data")==-4){
                                                         //Nothing

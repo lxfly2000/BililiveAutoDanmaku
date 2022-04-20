@@ -310,9 +310,12 @@ public class LoginWithAccountFragment extends Fragment {
                                 cookiesObj.put(key,value);
                             }
                             settings.SetString("Cookies",cookiesObj.toString());
-                            if(!((LoginActivity)getActivity()).TestCookies()){
-                                SubthreadToast(loginResult.toString());
-                            }
+                            ((LoginActivity)getActivity()).TestCookies(new LoginActivity.OnTestCookiesCallback() {
+                                @Override
+                                public void onFailed() {
+                                    SubthreadToast(loginResult.toString());
+                                }
+                            });
                         }catch (JSONException e){
                             SubthreadToast(e.getLocalizedMessage());
                         }

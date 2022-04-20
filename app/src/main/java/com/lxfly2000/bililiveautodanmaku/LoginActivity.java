@@ -60,7 +60,12 @@ public class LoginActivity extends AppCompatActivity {
         });
         new TabLayoutMediator(tabLayout, viewPager2, true,
                 (tab, position) -> tab.setText(getResources().getStringArray(R.array.label_login_methods)[position])).attach();
-        TestCookies();
+        TestCookies(new OnTestCookiesCallback() {
+            @Override
+            public void onFailed() {
+                //Nothing.
+            }
+        });
     }
 
     private void OpenDanmakuActivity(){
@@ -68,20 +73,42 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    public boolean TestCookies(){
+    public abstract static class OnTestCookiesCallback{
+        public abstract void onFailed();
+    }
+
+    public void TestCookies(OnTestCookiesCallback callback){
         try {
             JSONObject cookiesObj=new JSONObject(new SettingsHelper(this).GetString("Cookies"));
             String sess=cookiesObj.getString("SESSDATA");
-            Toast.makeText(this,sess,Toast.LENGTH_LONG).show();
-            //TODO:如果成功则调用OpenDanmakuActivity.
-            /*if(false){
-                OpenDanmakuActivity();
-                return true;
-            }*/
+            new OkHttpClient().newCall(new Request.Builder().url("https://api.bilibili.com/x/space/myinfo").get()
+                    .addHeader("Cookie","SESSDATA="+sess).build()).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    runOnUiThread(()->Toast.makeText(LoginActivity.this,e.getLocalizedMessage(),Toast.LENGTH_SHORT).show());
+                    callback.onFailed();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    try {
+                        JSONObject objReturned=new JSONObject(response.body().string());
+                        if(objReturned.getInt("code")!=0){
+                            runOnUiThread(()->Toast.makeText(LoginActivity.this,objReturned.toString(),Toast.LENGTH_SHORT).show());
+                            callback.onFailed();
+                            return;
+                        }
+                        runOnUiThread(()->OpenDanmakuActivity());
+                    }catch (JSONException e){
+                        runOnUiThread(()->Toast.makeText(LoginActivity.this,e.getLocalizedMessage(),Toast.LENGTH_SHORT).show());
+                        callback.onFailed();
+                    }
+                }
+            });
         }catch (JSONException e){
             Log.d("Login",e.getLocalizedMessage());
+            callback.onFailed();
         }
-        return false;
     }
 
     boolean canFinish=true;
