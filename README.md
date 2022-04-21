@@ -1,6 +1,9 @@
 # BililiveAutoDanmaku
 B站直播自动弹幕机
 
+## 下载
+[点击此处](https://github.com/lxfly2000/BililiveAutoDanmaku/releases)，然后选择“app-release.apk”下载。
+
 ## 参考资料
 * https://github.com/SocialSisterYi/bilibili-API-collect
 * https://github.com/kuresaru/geetest-validator
