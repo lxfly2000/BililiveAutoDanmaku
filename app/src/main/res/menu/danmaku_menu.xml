@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item android:title="@string/label_visit_live_room" android:id="@+id/menu_visit_live_room"/>
     <item android:title="@string/label_menu_quit_app" android:id="@+id/menu_quit_app"/>
     <item android:title="@string/label_menu_logout" android:id="@+id/menu_logout"/>
     <item android:title="@string/label_menu_about" android:id="@+id/menu_about"/>

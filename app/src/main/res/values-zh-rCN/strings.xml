@@ -36,4 +36,5 @@
     <string name="label_menu_about">关于</string>
     <string name="msg_no_danmaku_set">未设置弹幕。</string>
     <string name="label_n_danmaku_set">（已设置%d条弹幕）</string>
+    <string name="label_visit_live_room">访问直播间</string>
 </resources>

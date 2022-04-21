@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentContainerView;
 import com.google.android.material.textfield.TextInputLayout;
+import com.lxfly2000.utilities.AndroidUtility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,6 +77,9 @@ public class DanmakuActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
+            case R.id.menu_visit_live_room:
+                AndroidUtility.OpenUri(this,"https://live.bilibili.com/"+autoDanmakuService.GetRoomId());
+                break;
             case R.id.menu_quit_app:
                 EndService();
                 finish();
@@ -215,6 +219,7 @@ public class DanmakuActivity extends AppCompatActivity {
     }
 
     private void EditDanmakuFromService(){
+        danmakuIsEditing=true;
         //把服务中的弹幕放编辑框里编辑
         buttonEdit.setText(android.R.string.ok);
         editDanmakuFragment.SetEditText(LineListToString(autoDanmakuService.GetDanmakuList()));
@@ -222,6 +227,7 @@ public class DanmakuActivity extends AppCompatActivity {
     }
 
     private void ConfirmDanmakuToService(boolean uiOnly){
+        danmakuIsEditing=false;
         //把编辑好的文本存储到服务，并且展示在列表上
         if(findViewById(R.id.editDanmaku)!=null){
             danmakuString=((EditText)findViewById(R.id.editDanmaku)).getText().toString();
@@ -238,12 +244,11 @@ public class DanmakuActivity extends AppCompatActivity {
     boolean danmakuIsEditing=false;
 
     private void OnButtonEditClicked(){
-        danmakuIsEditing=!danmakuIsEditing;
         if(danmakuIsEditing){
-            EditDanmakuFromService();
-        }else{
             ConfirmDanmakuToService(false);
             SaveSettingsFromService();
+        }else{
+            EditDanmakuFromService();
         }
     }
 
@@ -309,6 +314,9 @@ public class DanmakuActivity extends AppCompatActivity {
     }
 
     private void OnButtonStartStopClicked(){
+        if(danmakuIsEditing){
+            ConfirmDanmakuToService(false);
+        }
         if(autoDanmakuService.IsStarted()){
             StopDanmaku(false);
         }else{
