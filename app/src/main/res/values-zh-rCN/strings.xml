@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">B站直播自动弹幕机</string>
+    <string name="label_user_name">用户名</string>
+    <string name="label_password">密码</string>
+    <string name="msg_check_captcha">请完成验证码</string>
+    <string name="msg_login_failed">登录失败。可能是用户名、密码错误或验证码过期。</string>
+    <string name="label_login">登录</string>
+    <string name="label_send_danmaku">发送弹幕</string>
+    <string name="label_phone_number">电话号码</string>
+    <string name="label_cr_code">国际区号</string>
+    <string name="label_verification_code">验证码</string>
+    <string name="label_send_code">发送验证码</string>
+    <string name="msg_verification_code_sent">验证码已发送</string>
+    <string name="msg_empty_username">请输入用户名。</string>
+    <string name="msg_empty_password">请输入密码。</string>
+    <string name="msg_empty_phone">请输入电话号码。</string>
+    <string name="msg_empty_verification_code">请输入验证码。</string>
+    <string name="label_qr_instructions">保存二维码后用B站App扫描，若无法在相册中找到请截图。</string>
+    <string name="msg_qr_confirm_login">请点击确认登录。</string>
+    <string name="label_save">保存</string>
+    <string name="msg_saved_to">已保存至 %s</string>
+    <string name="msg_qrcode_close_warning">退出后二维码会失效，是否继续？</string>
+    <string name="label_edit">编辑</string>
+    <string name="label_room_id">直播间ID</string>
+    <string name="label_send_interval">发送间隔（毫秒）</string>
+    <string name="label_next_line">即将发送的弹幕：（可通过点击列表设置）</string>
+    <string name="label_loop">循环</string>
+    <string name="label_start">开始</string>
+    <string name="label_stop">停止</string>
+    <string name="label_stopped">已停止。</string>
+    <string name="label_author">制作：lxfly2000</string>
+    <string name="label_visit_github">访问 GitHub</string>
+    <string name="label_menu_quit_app">退出应用</string>
+    <string name="label_menu_logout">注销登录</string>
+    <string name="label_menu_about">关于</string>
+    <string name="msg_no_danmaku_set">未设置弹幕。</string>
+    <string name="label_n_danmaku_set">（已设置%d条弹幕）</string>
+</resources>

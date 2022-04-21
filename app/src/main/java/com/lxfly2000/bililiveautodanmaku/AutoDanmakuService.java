@@ -1,7 +1,10 @@
 package com.lxfly2000.bililiveautodanmaku;
 
 import android.app.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Binder;
 import android.os.Build;
@@ -31,22 +34,66 @@ public class AutoDanmakuService extends Service {
         return localBinder;
     }
 
+    public static final String ACTION_TRY_START =BuildConfig.APPLICATION_ID+".TryStart";
+    public static final String ACTION_TRY_STOP=BuildConfig.APPLICATION_ID+".TryStop";
+    public static final String ACTION_START =BuildConfig.APPLICATION_ID+".Start";
+    public static final String ACTION_STOP=BuildConfig.APPLICATION_ID+".Stop";
+    private int notifyId=0;
+
+    private Notification BuildNotificationBar(String title,boolean runningIcon){
+        Intent notificationIntent=new Intent(this,DanmakuActivity.class);
+        PendingIntent pendingIntent=PendingIntent.getActivity(this,0,notificationIntent,0);
+        Notification.MediaStyle style=new Notification.MediaStyle().setShowActionsInCompactView(0);
+        Notification.Builder notifBuilder=new Notification.Builder(this);
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O)
+            notifBuilder.setChannelId(notifyChannelId);
+        notifBuilder.setContentText(getText(R.string.app_name));
+        notifBuilder.setSmallIcon(R.mipmap.ic_launcher);
+        notifBuilder.setContentTitle(title);
+        notifBuilder.setContentIntent(pendingIntent);
+        if(runningIcon) {
+            Intent iToggleStop=new Intent(ACTION_TRY_STOP);
+            PendingIntent piToggleStop=PendingIntent.getBroadcast(this,0,iToggleStop,0);
+            notifBuilder.addAction(android.R.drawable.ic_media_pause, getString(R.string.label_stop), piToggleStop);
+        }else {
+            Intent iToggleStart=new Intent(ACTION_TRY_START);
+            PendingIntent piToggleStart=PendingIntent.getBroadcast(this,0,iToggleStart,0);
+            notifBuilder.addAction(android.R.drawable.ic_media_play, getString(R.string.label_start), piToggleStart);
+        }
+        notifBuilder.setStyle(style);
+        return notifBuilder.build();
+    }
+
+    private BroadcastReceiver notificationReceiver;
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        notifyId=startId;
+        notificationManager=(NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         RegisterNotifyIdChannel();
-        Notification.Builder notifBuilder=new Notification.Builder(getApplicationContext())
-                .setContentIntent(PendingIntent.getActivity(this,0,new Intent(this,DanmakuActivity.class),0))
-                .setContentTitle(getString(R.string.app_name))
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentText("TODO");
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O) {
-            notifBuilder.setChannelId(notifyChannelId);
-        }
-        startForeground(1,notifBuilder.build());
-        //TODO:在通知中添加控制启动/暂停的按钮
+        startForeground(notifyId,BuildNotificationBar(getString(R.string.label_stopped),false));
+        IntentFilter fiNotification=new IntentFilter();
+        fiNotification.addAction(ACTION_TRY_START);
+        fiNotification.addAction(ACTION_TRY_STOP);
+        registerReceiver(notificationReceiver=new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(intent.getAction().compareTo(ACTION_TRY_START)==0) {
+                    if(StartDanmaku()){
+                        sendBroadcast(new Intent(ACTION_START));
+                    }
+                }else if(intent.getAction().compareTo(ACTION_TRY_STOP)==0) {
+                    InvokeCallbacks(errorCode,nextLine);
+                    if(StopDanmaku()){
+                        sendBroadcast(new Intent(ACTION_STOP));
+                    }
+                }
+            }
+        },fiNotification);
         return super.onStartCommand(intent, flags, startId);
     }
 
+    private NotificationManager notificationManager;
     private static final String notifyChannelId=BuildConfig.APPLICATION_ID;
 
     private void RegisterNotifyIdChannel(){
@@ -62,13 +109,16 @@ public class AutoDanmakuService extends Service {
             notificationChannel.enableVibration(false);
             notificationChannel.setSound(null,null);
             notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-            NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            manager.createNotificationChannel(notificationChannel);
+            notificationManager.createNotificationChannel(notificationChannel);
         }
     }
 
     @Override
     public void onDestroy() {
+        if(notificationReceiver!=null){
+            unregisterReceiver(notificationReceiver);
+            notificationReceiver=null;
+        }
         stopForeground(true);
         super.onDestroy();
     }
@@ -87,6 +137,10 @@ public class AutoDanmakuService extends Service {
     String errorMsg="";
     String cookieString,bili_jct;
 
+    private String GetDanmakuNotifyString(int index){
+        return "["+index+"]"+params.danmakuList.get(index);
+    }
+
     public boolean StartDanmaku(){
         errorCode=0;
         errorMsg="";
@@ -94,6 +148,7 @@ public class AutoDanmakuService extends Service {
             errorCode=-1;
             errorMsg=getString(R.string.msg_no_danmaku_set);
             InvokeCallbacks(errorCode,nextLine);
+            notificationManager.notify(notifyId,BuildNotificationBar(errorMsg,false));
             return false;
         }
         if(nextLine<0||nextLine>=params.danmakuList.size()){
@@ -101,6 +156,7 @@ public class AutoDanmakuService extends Service {
         }
         if(timer!=null){
             InvokeCallbacks(errorCode,nextLine);
+            notificationManager.notify(notifyId,BuildNotificationBar(GetDanmakuNotifyString(nextLine),true));
             return true;
         }
         timer=new Timer();
@@ -139,6 +195,7 @@ public class AutoDanmakuService extends Service {
                                     errorMsg = e.getLocalizedMessage();
                                     InvokeCallbacks(errorCode,nextLine);
                                     StopDanmaku();
+                                    notificationManager.notify(notifyId,BuildNotificationBar(errorMsg,false));
                                 }
 
                                 @Override
@@ -148,6 +205,7 @@ public class AutoDanmakuService extends Service {
                                         if (params.loop) {
                                             nextLine = 0;
                                             InvokeCallbacks(errorCode,nextLine);
+                                            notificationManager.notify(notifyId,BuildNotificationBar(GetDanmakuNotifyString(nextLine),true));
                                         } else {
                                             errorCode=1;
                                             InvokeCallbacks(errorCode,nextLine);
@@ -155,16 +213,19 @@ public class AutoDanmakuService extends Service {
                                         }
                                     }else{
                                         InvokeCallbacks(errorCode,nextLine);
+                                        notificationManager.notify(notifyId,BuildNotificationBar(GetDanmakuNotifyString(nextLine),true));
                                     }
                                 }
                             });
                 }
             }, params.sendInterval, params.sendInterval);
             InvokeCallbacks(errorCode,nextLine);
+            notificationManager.notify(notifyId,BuildNotificationBar(GetDanmakuNotifyString(nextLine),true));
         }catch (JSONException e){
             errorCode=-1;
             errorMsg=e.getLocalizedMessage();
             InvokeCallbacks(errorCode,nextLine);
+            notificationManager.notify(notifyId,BuildNotificationBar(errorMsg,false));
             return false;
         }
         return true;
@@ -176,6 +237,7 @@ public class AutoDanmakuService extends Service {
         }
         timer.cancel();
         timer=null;
+        notificationManager.notify(notifyId,BuildNotificationBar(getString(R.string.label_stopped),false));
         return true;
     }
 
