@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="label_login_methods">
+        <item>账号登录</item>
+        <item>短信登录</item>
+        <item>二维码登录</item>
+    </string-array>
+</resources>
