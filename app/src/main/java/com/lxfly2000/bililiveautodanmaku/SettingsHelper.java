@@ -17,6 +17,14 @@ public class SettingsHelper {
         pref.edit().putInt(key,i).apply();
     }
 
+    void SetBoolean(String key, boolean b){
+        pref.edit().putBoolean(key, b).apply();
+    }
+
+    boolean GetBoolean(String key){
+        return pref.getBoolean(key,false);
+    }
+
     void SetString(String key,String s){
         pref.edit().putString(key,s).apply();
     }

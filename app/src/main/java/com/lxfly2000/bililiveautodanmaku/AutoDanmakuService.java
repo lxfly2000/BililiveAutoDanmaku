@@ -100,8 +100,8 @@ public class AutoDanmakuService extends Service {
             nextLine=0;
         }
         if(timer!=null){
-            Log.d("Danmaku","Timer is not released.");
-            timer.cancel();
+            InvokeCallbacks(errorCode,nextLine);
+            return true;
         }
         timer=new Timer();
         try {

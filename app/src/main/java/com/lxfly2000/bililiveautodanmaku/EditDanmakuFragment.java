@@ -52,4 +52,10 @@ public class EditDanmakuFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ((EditText)view.findViewById(R.id.editDanmaku)).setText(danmakuString);
     }
+
+    public void SetEditText(String s){
+        Bundle bundle=new Bundle();
+        bundle.putString(ARG_DANMAKU_STRING,s);
+        setArguments(bundle);
+    }
 }

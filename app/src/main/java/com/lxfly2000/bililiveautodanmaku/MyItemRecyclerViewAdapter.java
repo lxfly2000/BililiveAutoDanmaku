@@ -1,26 +1,28 @@
 package com.lxfly2000.bililiveautodanmaku;
 
-import androidx.recyclerview.widget.RecyclerView;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.lxfly2000.bililiveautodanmaku.placeholder.PlaceholderContent.PlaceholderItem;
+import androidx.recyclerview.widget.RecyclerView;
 import com.lxfly2000.bililiveautodanmaku.databinding.FragmentDanmakuBinding;
 
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link PlaceholderItem}.
- * TODO: Replace the implementation with code for your data type.
- */
 public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
 
-    private final List<PlaceholderItem> mValues;
+    private List<String> mValues;
+    private int highlightedItem=-1;
 
-    public MyItemRecyclerViewAdapter(List<PlaceholderItem> items) {
+    public MyItemRecyclerViewAdapter(List<String> items) {
         mValues = items;
+    }
+
+    public void SetValues(List<String>newValues){
+        mValues=newValues;
     }
 
     @Override
@@ -33,8 +35,14 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mIdView.setText("["+position+"]");
+        holder.mContentView.setText(mValues.get(position));
+        holder.mIdView.setTextColor(highlightedItem==position? Color.WHITE:Color.BLACK);
+        holder.mContentView.setTextColor(highlightedItem==position? Color.WHITE:Color.BLACK);
+        LinearLayout layout=(LinearLayout) holder.mIdView.getRootView();
+        layout.setBackgroundColor(highlightedItem==position?Color.rgb(255,0,110):Color.TRANSPARENT);
+        layout.setTag(position);
+        layout.setOnClickListener(getPositionClickListener);
     }
 
     @Override
@@ -45,7 +53,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView mIdView;
         public final TextView mContentView;
-        public PlaceholderItem mItem;
+        public String mItem;
 
         public ViewHolder(FragmentDanmakuBinding binding) {
             super(binding.getRoot());
@@ -57,5 +65,21 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public String toString() {
             return super.toString() + " '" + mContentView.getText() + "'";
         }
+    }
+
+    public void SetHighlightItem(int position){
+        highlightedItem=position;
+    }
+
+    private AdapterView.OnItemClickListener itemClickListener;
+    private View.OnClickListener getPositionClickListener=view -> {
+        if(itemClickListener!=null){
+            itemClickListener.onItemClick(null,view,(int)view.getTag(),0);
+        }
+    };
+
+    /**注意：由于RecyclerView与AdapterView的适配器完全不同，回调函数中的adapterView将返回null*/
+    public void SetOnItemClickListener(AdapterView.OnItemClickListener listener){
+        itemClickListener=listener;
     }
 }

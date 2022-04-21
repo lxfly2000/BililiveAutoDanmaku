@@ -2,16 +2,13 @@ package com.lxfly2000.bililiveautodanmaku;
 
 import android.content.Context;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.lxfly2000.bililiveautodanmaku.placeholder.PlaceholderContent;
-
-import java.util.List;
+import android.widget.AdapterView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * A fragment representing a list of Items.
@@ -19,7 +16,6 @@ import java.util.List;
 public class DanmakuFragment extends Fragment {
 
     private static final String ARG_DANMAKU_STRING = "paramDanmakuString";
-    // TODO: Customize parameters
     private String danmakuString;
 
     /**
@@ -29,7 +25,6 @@ public class DanmakuFragment extends Fragment {
     public DanmakuFragment() {
     }
 
-    // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
     public static DanmakuFragment newInstance(String danmakuString) {
         DanmakuFragment fragment = new DanmakuFragment();
@@ -58,8 +53,40 @@ public class DanmakuFragment extends Fragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(PlaceholderContent.ITEMS));
+            if(danmakuString==null) {
+                danmakuString="";
+            }
+            MyItemRecyclerViewAdapter adapter=new MyItemRecyclerViewAdapter(DanmakuActivity.StringToLineList(danmakuString));
+            adapter.SetOnItemClickListener(itemClickListener);
+            recyclerView.setAdapter(adapter);
         }
         return view;
+    }
+
+    public void SetDanmakuString(String s){
+        Bundle bundle=new Bundle();
+        bundle.putString(ARG_DANMAKU_STRING,s);
+        setArguments(bundle);
+    }
+
+    public void SetHighlightItem(int position){
+        View view=getView();
+        if(view!=null) {
+            RecyclerView recyclerView = view.findViewById(R.id.list);
+            if (recyclerView != null) {
+                MyItemRecyclerViewAdapter adapter = (MyItemRecyclerViewAdapter) recyclerView.getAdapter();
+                adapter.SetHighlightItem(position);
+                adapter.notifyDataSetChanged();
+                if(position>=0&&position<adapter.getItemCount()) {
+                    recyclerView.smoothScrollToPosition(position);
+                }
+            }
+        }
+    }
+
+    AdapterView.OnItemClickListener itemClickListener;
+
+    public void SetOnItemClickListener(AdapterView.OnItemClickListener listener){
+        itemClickListener=listener;
     }
 }

@@ -28,7 +28,10 @@ public class DanmakuActivity extends AppCompatActivity {
     Button buttonEdit,buttonStartStop;
     FragmentContainerView fragmentDanmaku;
     private static final String keyContents="Contents",keyRoomId="RoomId",keyInterval="Interval",keyLoop="Loop";
+    /**由于列表获取文本不方便，用作列表文本存储*/
     String danmakuString;
+    EditDanmakuFragment editDanmakuFragment;
+    DanmakuFragment danmakuFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +47,10 @@ public class DanmakuActivity extends AppCompatActivity {
         buttonStartStop=findViewById(R.id.buttonStartStop);
         buttonStartStop.setOnClickListener(view->OnButtonStartStopClicked());
         fragmentDanmaku=findViewById(R.id.fragmentDanmaku);
-        LoadSettings();
+        editDanmakuFragment=EditDanmakuFragment.newInstance("");
+        danmakuFragment=DanmakuFragment.newInstance("");
+        SetListCallback();
+        //后续操作在OnServiceBound中
     }
 
     @Override
@@ -114,9 +120,20 @@ public class DanmakuActivity extends AppCompatActivity {
 
     private void OnServiceBound(){
         //onCreate的后续操作
-        if(autoDanmakuService.IsStarted()){
-            LoadServiceSettings();
+        //看一下服务有没有在运行
+        if(autoDanmakuService.IsStarted()) {
+            StartDanmaku(false);
+        }else{//如没有就把设置加载一下
+            LoadSettingsToService();
         }
+        LoadServiceSettingsToActivity();
+        ConfirmDanmakuToService();
+    }
+
+    @Override
+    protected void onDestroy() {
+        autoDanmakuService.ClearCallback();
+        super.onDestroy();
     }
 
     private void EndService(){
@@ -138,56 +155,64 @@ public class DanmakuActivity extends AppCompatActivity {
     public static String LineListToString(List<String>list){
         StringBuilder sb=new StringBuilder();
         for(String s:list){
-            sb.append(s).append("\n");
+            if(sb.length()>0){
+                sb.append("\n");
+            }
+            sb.append(s);
         }
         return sb.toString();
     }
 
-    private void SaveSettings(){
-        settingsHelper.SetString(keyContents,danmakuString);
-        settingsHelper.SetInt(keyRoomId,Integer.parseInt(editRoomId.getEditText().getText().toString()));
-        int val=Integer.parseInt(editInterval.getEditText().getText().toString());
+    private void SaveSettingsFromService(){
+        settingsHelper.SetString(keyContents,LineListToString(autoDanmakuService.GetDanmakuList()));
+        settingsHelper.SetInt(keyRoomId,autoDanmakuService.GetRoomId());
+        int val=autoDanmakuService.GetInterval();
         if(val<5000){
-            val=5000;
-            editInterval.getEditText().setText("5000");
+            autoDanmakuService.SetSendInterval(val=5000);
         }
         settingsHelper.SetInt(keyInterval,val);
-        settingsHelper.SetInt(keyLoop,checkLoop.isChecked()?1:0);
+        settingsHelper.SetBoolean(keyLoop,autoDanmakuService.GetIsLooped());
     }
 
-    private void LoadSettings(){
-        int val=settingsHelper.GetInt(keyRoomId);
-        editRoomId.getEditText().setText(String.valueOf(val==0?1:val));
-        val=settingsHelper.GetInt(keyInterval);
-        editInterval.getEditText().setText(String.valueOf(val==0?6000:val));
-        checkLoop.setChecked(settingsHelper.GetInt(keyLoop)==1);
-        danmakuString=settingsHelper.GetString(keyContents);
-        ConfirmDanmaku();
+    private void LoadSettingsToService(){
+        autoDanmakuService.SetLiveRoom(Math.max(1,settingsHelper.GetInt(keyRoomId)));
+        int val=settingsHelper.GetInt(keyInterval);
+        autoDanmakuService.SetSendInterval(val==0?6000:val);
+        autoDanmakuService.SetLoop(settingsHelper.GetBoolean(keyLoop));
+        autoDanmakuService.SetContent(StringToLineList(settingsHelper.GetString(keyContents)));
     }
 
-    private void LoadServiceSettings(){
+    private void LoadServiceSettingsToActivity(){
         editRoomId.getEditText().setText(String.valueOf(autoDanmakuService.GetRoomId()));
         editInterval.getEditText().setText(String.valueOf(autoDanmakuService.GetInterval()));
         checkLoop.setChecked(autoDanmakuService.GetIsLooped());
         danmakuString=LineListToString(autoDanmakuService.GetDanmakuList());
-        ConfirmDanmaku();
     }
 
-    private void SetServiceSettings(){
+    private void SetServiceSettingsFromActivity(){
         autoDanmakuService.SetContent(StringToLineList(danmakuString))
                 .SetLiveRoom(Integer.parseInt(editRoomId.getEditText().getText().toString()))
                 .SetSendInterval(Integer.parseInt(editInterval.getEditText().getText().toString()))
                 .SetLoop(checkLoop.isChecked());
     }
 
-    private void EditDanmaku(){
+    private void EditDanmakuFromService(){
+        //把服务中的弹幕放编辑框里编辑
         buttonEdit.setText(android.R.string.ok);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentDanmaku,EditDanmakuFragment.newInstance(danmakuString)).commit();
+        editDanmakuFragment.SetEditText(LineListToString(autoDanmakuService.GetDanmakuList()));
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentDanmaku,editDanmakuFragment).commit();
     }
 
-    private void ConfirmDanmaku(){
-        buttonEdit.setText(getString(R.string.label_edit)+" ("+getString(R.string.label_n_danmaku_set,StringToLineList(danmakuString).size())+")");
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentDanmaku,DanmakuFragment.newInstance(danmakuString)).commit();
+    private void ConfirmDanmakuToService(){
+        //把编辑好的文本存储到服务，并且展示在列表上
+        if(findViewById(R.id.editDanmaku)!=null){
+            danmakuString=((EditText)findViewById(R.id.editDanmaku)).getText().toString();
+        }
+        List<String>list=StringToLineList(danmakuString);
+        buttonEdit.setText(getString(R.string.label_edit)+" ("+getString(R.string.label_n_danmaku_set,list.size())+")");
+        danmakuFragment.SetDanmakuString(danmakuString);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentDanmaku,danmakuFragment).commit();
+        autoDanmakuService.SetContent(list);
     }
 
     boolean danmakuIsEditing=false;
@@ -195,43 +220,71 @@ public class DanmakuActivity extends AppCompatActivity {
     private void OnButtonEditClicked(){
         danmakuIsEditing=!danmakuIsEditing;
         if(danmakuIsEditing){
-            EditDanmaku();
+            EditDanmakuFromService();
         }else{
-            danmakuString=((EditText)findViewById(R.id.editDanmaku)).getText().toString();
-            SaveSettings();
-            ConfirmDanmaku();
+            ConfirmDanmakuToService();
+            SaveSettingsFromService();
         }
     }
 
-    private void StartDanmaku(){
-        SaveSettings();
-        SetServiceSettings();
+    private void StartDanmaku(boolean saveSettings){
+        if(saveSettings) {
+            SetServiceSettingsFromActivity();
+            SaveSettingsFromService();
+        }
         autoDanmakuService.ClearCallback();
         autoDanmakuService.AddCallback(new AutoDanmakuService.DanmakuCallback() {
             @Override
             public void OnCallback(int error, int nextLine) {
                 if(error==0){
-                    textNextLine.setText("["+nextLine+"]"+autoDanmakuService.GetDanmakuList().get(nextLine));
+                    runOnUiThread(()-> {
+                        textNextLine.setText("[" + nextLine + "]" + autoDanmakuService.GetDanmakuList().get(nextLine));
+                        if(!danmakuIsEditing) {
+                            danmakuFragment.SetHighlightItem(nextLine);
+                        }
+                    });
                 }else if(error==1){
                     StopDanmaku();
                 }else{
-                    textNextLine.setText(autoDanmakuService.GetErrorMsg());
+                    StopDanmaku();
+                    runOnUiThread(()-> {
+                        textNextLine.setText(autoDanmakuService.GetErrorMsg());
+                        if(!danmakuIsEditing) {
+                            danmakuFragment.SetHighlightItem(-1);
+                        }
+                    });
                 }
             }
         });
         if(autoDanmakuService.StartDanmaku()) {
             buttonStartStop.setText(R.string.label_stop);
+            buttonEdit.setEnabled(false);
+            editRoomId.setEnabled(false);
+            editInterval.setEnabled(false);
+            checkLoop.setEnabled(false);
         }else{
             autoDanmakuService.ClearCallback();
             textNextLine.setText(autoDanmakuService.GetErrorMsg());
+            if(!danmakuIsEditing) {
+                danmakuFragment.SetHighlightItem(-1);
+            }
         }
     }
 
     private void StopDanmaku(){
         if(autoDanmakuService.StopDanmaku()) {
             autoDanmakuService.ClearCallback();
-            buttonStartStop.setText(R.string.label_start);
-            textNextLine.setText(R.string.label_stopped);
+            runOnUiThread(()-> {
+                buttonStartStop.setText(R.string.label_start);
+                textNextLine.setText(R.string.label_stopped);
+                if(!danmakuIsEditing) {
+                    danmakuFragment.SetHighlightItem(-1);
+                }
+                buttonEdit.setEnabled(true);
+                editRoomId.setEnabled(true);
+                editInterval.setEnabled(true);
+                checkLoop.setEnabled(true);
+            });
         }
     }
 
@@ -239,7 +292,15 @@ public class DanmakuActivity extends AppCompatActivity {
         if(autoDanmakuService.IsStarted()){
             StopDanmaku();
         }else{
-            StartDanmaku();
+            StartDanmaku(true);
         }
+    }
+
+    private void SetListCallback(){
+        danmakuFragment.SetOnItemClickListener((adapterView, view, i, l) -> {
+            textNextLine.setText("[" + i + "]" + autoDanmakuService.GetDanmakuList().get(i));
+            danmakuFragment.SetHighlightItem(i);
+            autoDanmakuService.SetNextLine(i);
+        });
     }
 }
