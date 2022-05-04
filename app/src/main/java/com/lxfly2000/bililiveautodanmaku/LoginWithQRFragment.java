@@ -91,7 +91,7 @@ public class LoginWithQRFragment extends Fragment {
     Timer timer=new Timer();
 
     public void SubthreadToast(String str){
-        getActivity().runOnUiThread(()->((TextView)getActivity().findViewById(R.id.textViewQRStatus)).setText(str));
+        getActivity().runOnUiThread(()->statusView.setText(str));
     }
 
     @Override

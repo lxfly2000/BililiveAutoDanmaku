@@ -78,7 +78,7 @@ public class DanmakuFragment extends Fragment {
                 adapter.SetHighlightItem(position);
                 adapter.notifyDataSetChanged();
                 if(position>=0&&position<adapter.getItemCount()) {
-                    recyclerView.smoothScrollToPosition(position);
+                    recyclerView.scrollToPosition(position);
                 }
             }
         }

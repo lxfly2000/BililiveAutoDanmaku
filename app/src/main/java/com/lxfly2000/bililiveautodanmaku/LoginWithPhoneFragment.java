@@ -282,7 +282,7 @@ public class LoginWithPhoneFragment extends Fragment {
     }
 
     public void SubthreadToast(String str){
-        getActivity().runOnUiThread(()->((TextView)getActivity().findViewById(R.id.textViewSMSStatus)).setText(str));
+        getActivity().runOnUiThread(()->textViewStatus.setText(str));
     }
 
     JSONObject smsReceived;
