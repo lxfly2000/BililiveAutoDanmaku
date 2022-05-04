@@ -1,4 +1,6 @@
 # BililiveAutoDanmaku
+[![Android CI](https://github.com/lxfly2000/BililiveAutoDanmaku/actions/workflows/android.yml/badge.svg)](https://github.com/lxfly2000/BililiveAutoDanmaku/actions/workflows/android.yml)
+
 B站直播自动弹幕机
 
 ## 下载
