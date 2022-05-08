@@ -26,7 +26,7 @@
         <activity
                 android:name=".DanmakuActivity"
                 android:exported="true"
-                android:label="@string/label_send_danmaku"/>
+                android:label="@string/label_send_danmaku" android:launchMode="singleTop"/>
         <activity
                 android:name=".LoginActivity"
                 android:exported="true">

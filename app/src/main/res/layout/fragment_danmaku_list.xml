@@ -9,4 +9,8 @@
         android:layout_height="match_parent"
         app:layoutManager="LinearLayoutManager"
         tools:context=".DanmakuFragment"
-        tools:listitem="@layout/fragment_danmaku"/>
+        tools:listitem="@layout/fragment_danmaku" app:fastScrollEnabled="true"
+        app:fastScrollHorizontalThumbDrawable="?android:attr/fastScrollThumbDrawable"
+        app:fastScrollHorizontalTrackDrawable="?android:attr/fastScrollTrackDrawable"
+        app:fastScrollVerticalThumbDrawable="?android:attr/fastScrollThumbDrawable"
+        app:fastScrollVerticalTrackDrawable="?android:attr/fastScrollTrackDrawable"/>

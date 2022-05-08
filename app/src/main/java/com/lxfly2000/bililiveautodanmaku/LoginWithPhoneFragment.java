@@ -318,6 +318,7 @@ public class LoginWithPhoneFragment extends Fragment {
                                 getActivity().runOnUiThread(()->{
                                     SubthreadToast(getString(R.string.msg_verification_code_sent));
                                     editVerificationCode.requestFocus();
+                                    buttonLogin.setEnabled(true);
                                 });
                             }catch (JSONException e){
                                 SubthreadToast(e.getLocalizedMessage());

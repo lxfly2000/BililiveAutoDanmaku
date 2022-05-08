@@ -53,7 +53,7 @@
     <Button
             android:text="@string/label_login"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:id="@+id/buttonLoginWithPhone"/>
+            android:layout_height="wrap_content" android:id="@+id/buttonLoginWithPhone" android:enabled="false"/>
     <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content" android:id="@+id/textViewSMSStatus"/>

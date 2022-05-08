@@ -10,5 +10,5 @@
             android:inputType="textMultiLine"
             android:gravity="start|top"
             android:ems="10"
-            android:id="@+id/editDanmaku" android:hint="@string/label_edit"/>
+            android:id="@+id/editDanmaku" android:hint="@string/label_edit" android:scrollbars="vertical"/>
 </FrameLayout>
